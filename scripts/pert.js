@@ -2,7 +2,7 @@ const pertEntry = [
     {
         codeNo: 1,
         code: "A",
-        predecessor: "None",
+        predecessor: [],
         a: 2,
         m: 3,
         b: 4,
@@ -10,7 +10,7 @@ const pertEntry = [
     {
         codeNo: 2,
         code: "B",
-        predecessor: "None",
+        predecessor: [],
         a: 3,
         m: 7,
         b: 7,
