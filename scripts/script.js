@@ -10,6 +10,7 @@ pertEntry.forEach(task => {
     // Computation for Expected Time.
     task.ET = Math.round((task.a + (4 * task.m) + task.b) / 6);
 
+    // Computation for Forward Pass
     if (task.predecessor.length === 0) {
         task.ES = 0;
     } else {
@@ -20,11 +21,28 @@ pertEntry.forEach(task => {
     }
     task.EF = task.ES + task.ET;
 
-    console.log(task.EF)
+    const maxEF = Math.max(...pertEntry.map(task => task.EF))
+    pertEntry.slice().reverse().forEach(task => {
+        if (pertEntry.every(t => !t.predecessor.includes(task.code))) {
+            task.LF = maxEF;
+        } else {
+            task.LF = Math.min(...pertEntry
+                .filter(t => t.predecessor.includes(task.code))
+                .map(t => t.LS))
 
+        }
+        task.LS = task.LF - task.ET;
+    })
+
+    pertEntry.forEach(task => {
+        task.slack = Math.abs(task.LS - task.ES);
+    })
+})
+pertEntry.forEach((task, i) => {
     pertHTML += `
     <tr>
-        <td>${task.codeNo}</td>
+        <td>${i + 1}</td>
+        <td>${task.code}</td>
         <td>${checkPredecessor(task)}</td>
         <td>${task.a}</td>
         <td>${task.m}</td>
@@ -32,9 +50,9 @@ pertEntry.forEach(task => {
         <td>${task.ET}</td>
         <td class="earliest-start">${task.ES}</td>
         <td class="earliest-finish">${task.EF}</td>
-        <td class="latest-start"></td>
-        <td class="latest-finish"></td>
-        <td class="slack"></td>
+        <td class="latest-start">${task.LS}</td>
+        <td class="latest-finish">${task.LF}</td>
+        <td class="slack">${task.slack}</td>
     </tr>
     `
 })
