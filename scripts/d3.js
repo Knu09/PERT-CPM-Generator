@@ -2,11 +2,27 @@ svg = d3.select('#svgContent')
 width = +svg.attr('width');
 height = +svg.attr('height');
 
+const codeNoToSlack = {};
+pertEntry.forEach(task => {
+    codeNoToSlack[task.codeNo] = task.slack
+})
 
+links.forEach(link => {
+    link.slack = codeNoToSlack[link.target]
+    console.log(link.slack)
+})
+
+console.log(graph.nodes)
+console.log(graph.links)
 let simulation = d3.forceSimulation(graph.nodes)
     .force('link', d3.forceLink(graph.links)
         .id(function (d) { return d.id; })
-        .distance(120)
+        .distance(d => {
+            if (d.slack !== undefined) {
+                return 120 + (d.slack * 20)
+            }
+            return 80
+        })
     )
     .force('charge', d3.forceManyBody().strength(-1500))
     .force("center", d3.forceCenter(width / 2, height / 2))
