@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="index.css">
     <title>Graph Sample</title>
-    <script defer src="scripts/pert.js"></script>
-    <script defer src="scripts/script.js"></script>
 </head>
 <body>
     <h1>PERT/CPM Network</h1>
@@ -29,50 +27,22 @@
         </thead>
         <tbody class="PERT-body">
             <tr class="PERT-row">
-<!--                <td>A</td>-->
-<!--                <td>None</td>-->
-<!--                <td>2</td>-->
-<!--                <td>3</td>-->
-<!--                <td>4</td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
+
             </tr>
-<!--            <tr>-->
-<!--                <td>B</td>-->
-<!--                <td>None</td>-->
-<!--                <td>4</td>-->
-<!--                <td>5</td>-->
-<!--                <td>2</td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <td>C</td>-->
-<!--                <td>None</td>-->
-<!--                <td>2</td>-->
-<!--                <td>3</td>-->
-<!--                <td>4</td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--                <td></td>-->
-<!--            </tr>-->
         </tbody>
     </table>
 
-    <svg class="bar-chart"></svg>
+    <div>
+        <svg id="svgContent" width="980" height="1000"></svg>
+    </div>
+
     <script src="https://d3js.org/d3.v7.min.js"></script>
+
+
+    <script defer src="scripts/pert.js"></script>
+    <script src="scripts/graphData.js"></script>
     <script src="scripts/chart.js"></script>
+    <script defer src="scripts/script.js"></script>
 </body>
 
 </html>
