@@ -120,9 +120,19 @@ let verticalPartition2 = textsAndNodes
     .style("stroke", "black")
     .style("stroke-width", 2)
 
-// let startNode = textsAndNodes
+// let startNode = svg
 //     .append('rect')
-//     .style('rx')
+//     .attr('class', "nodes")
+//     .attr('width', () => 60)
+//     .attr('height', () => 40)
+//     .attr('rx', 10)
+//     .attr('ry', 10)
+//     .attr('fill', function(d) {
+//         return 'white';
+//     })
+//     .attr("stroke-width", 2)
+//     .attr("stroke", () => 'black')
+
 function ticked() {
     link
         .attr("x1", function(d) { return d.source.x; })
@@ -132,10 +142,6 @@ function ticked() {
     textsAndNodes
         .attr("transform", d => 'translate(' + (d.x - 50) + ", " + (d.y - 20) + ")")
 
-
-    // node
-    //     .attr("x", function (d) { return d.x - 50; })
-    //     .attr("y", function(d) { return d.y - 20; });
 }
 function drag(simulation) {
     function dragstarted(event) {

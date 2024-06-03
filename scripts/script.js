@@ -63,19 +63,47 @@ const nodes = pertEntry.map(task => ({
     name: task.code
 }))
 
-const codeToID = {}
+// Adding "start" and "Finish" nodes
+nodes.push({ id: "start", name: "Start"});
+nodes.push({ id: "finish", name: "Finish"});
+
+const codeToId = {}
 pertEntry.forEach(task => {
-    codeToID[task.code] = task.codeNo
+    codeToId[task.code] = task.codeNo
 })
 
 const links = []
 pertEntry.forEach(task => {
     task.predecessor.forEach(pre => {
         links.push({
-            source: codeToID[pre],
+            source: codeToId[pre],
             target: task.codeNo
         })
     })
+})
+
+pertEntry.forEach(task => {
+    if (task.predecessor.length === 0) {
+        links.push({
+            source: 'start',
+            target: task.codeNo
+        })
+    }
+})
+
+const nodeIdsWithSuccessors = new Set();
+pertEntry.forEach(task => {
+    task.predecessor.forEach(pre => {
+        nodeIdsWithSuccessors.add(codeToId[pre])
+    })
+})
+pertEntry.forEach(task => {
+    if(!nodeIdsWithSuccessors.has(task.codeNo)) {
+        links.push({
+            source: task.codeNo,
+            target: "finish"
+        })
+    }
 })
 
 
