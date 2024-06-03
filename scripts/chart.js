@@ -2,7 +2,7 @@ svg = d3.select('#svgContent')
 width = +svg.attr('width');
 height = +svg.attr('height');
 
-console.log(graph.links)
+
 let simulation = d3.forceSimulation(graph.nodes)
     .force('link', d3.forceLink(graph.links)
         .id(function (d) { return d.id; })
@@ -10,8 +10,9 @@ let simulation = d3.forceSimulation(graph.nodes)
     )
     .force('charge', d3.forceManyBody().strength(-3000))
     .force("center", d3.forceCenter(width / 2, height / 2))
+    .force('x', d3.forceX()) // optional: horizontal positioning
+    .force('y', d3.forceY()) // optional: vertical positioning
     .on('tick', ticked);
-
 
 const link = svg
     .append('g')
@@ -83,3 +84,5 @@ function drag(simulation) {
         .on("drag", dragged)
         .on("end", dragended);
 }
+
+simulation.restart()

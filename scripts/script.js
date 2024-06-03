@@ -58,5 +58,24 @@ pertEntry.forEach((task, i) => {
 })
 document.querySelector('.PERT-body').innerHTML = pertHTML;
 
+const nodes = pertEntry.map(task => ({
+    id: task.codeNo,
+    name: task.code
+}))
+
+const codeToID = {}
+pertEntry.forEach(task => {
+    codeToID[task.code] = task.codeNo
+})
+
+const links = []
+pertEntry.forEach(task => {
+    task.predecessor.forEach(pre => {
+        links.push({
+            source: codeToID[pre],
+            target: task.codeNo
+        })
+    })
+})
 
 
