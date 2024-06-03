@@ -42,7 +42,7 @@ const pertEntry = [
     {
         codeNo: 6,
         code: "F",
-        predecessor: ["D", "E"],
+        predecessor: ["D"],
         a: 0,
         m: 4,
         b: 4,
@@ -58,7 +58,7 @@ const pertEntry = [
     {
         codeNo: 8,
         code: "H",
-        predecessor: ["F", "G"],
+        predecessor: ["F"],
         a: 2,
         m: 2,
         b: 7,
