@@ -2,6 +2,8 @@ svg = d3.select('#svgContent')
 width = +svg.attr('width');
 height = +svg.attr('height');
 
+console.log(graph.nodes)
+
 const codeNoToSlack = {};
 pertEntry.forEach(task => {
     codeNoToSlack[task.codeNo] = task.slack
@@ -9,19 +11,16 @@ pertEntry.forEach(task => {
 
 links.forEach(link => {
     link.slack = codeNoToSlack[link.target]
-    console.log(link.slack)
 })
 
-console.log(graph.nodes)
-console.log(graph.links)
 let simulation = d3.forceSimulation(graph.nodes)
     .force('link', d3.forceLink(graph.links)
         .id(function (d) { return d.id; })
         .distance(d => {
-            if (d.slack !== undefined) {
-                return 120 + (d.slack * 20)
+            if (d.slack !== undefined && d.slack !== 0) {
+                return 80 * d.slack
             }
-            return 80
+            return 120
         })
     )
     .force('charge', d3.forceManyBody().strength(-1500))
@@ -44,6 +43,7 @@ const textsAndNodes = svg
     .selectAll('g')
     .data(graph.nodes)
     .enter().append("g")
+    .attr('class', 'node')
     .call(drag(simulation))
 
 let node = textsAndNodes
@@ -59,19 +59,39 @@ let node = textsAndNodes
     .attr("stroke-width", 2)
     .attr("stroke", () => 'black')
 
+const lastElement = graph.nodes[graph.nodes.length - 1]
+const secondToLastElement = graph.nodes[graph.nodes.length - 2]
 
 let darkBackground = textsAndNodes
     .append('path')
-    .attr("d", "M0 10C0 4.47715 4.47715 0 10 0H33.33V25.5H0V10Z")
+    .attr("d", d => {
+        if(d.index === lastElement.index || d.index === secondToLastElement.index ) {
+            return "M 10 0H 90C 95.5228 0 100 4.47715 100 10V 40C 100 45.5228 95.5228 50 90 50H 10C 4.47715 50 0 45.5228 0 40V 10C 0 4.47715 4.47715 0 10 0Z "
+        } else {
+            return "M0 10C0 4.47715 4.47715 0 10 0H33.33V25.5H0V10Z"
+        }
+
+    })
     .attr("fill", "#101423")
 
 let activity = textsAndNodes
-    .append("text")
-    .text(d => d.name)
-    .attr('x', 12)
-    .attr('y', 18)
-    .style('fill', "white")
-    .style('z-index', 100)
+        .append("text")
+        .text(d => d.name)
+        .attr('x', function(d) {
+            if (d.id === lastElement.id || d.id === secondToLastElement.id) {
+                return 26; // Center x position
+            }
+            return 12; // Default x position
+        })
+        .attr('y', function(d) {
+            if (d.id === lastElement.id || d.id === secondToLastElement.id) {
+                return 28; // Center y position
+            }
+            return 18; // Default y position
+        })
+
+        .style('fill', "white")
+        .style('z-index', 100)
 
 let estimatedTime = textsAndNodes
     .append("text")
@@ -115,8 +135,9 @@ let horizontalPartition = textsAndNodes
     .attr("x2", 100)
     .attr("y1", 26)
     .attr("y2", 26)
-    .style("stroke", "black")
+    .style("stroke", "#101423")
     .style("stroke-width", 2)
+    .style("display", d => (d.id === lastElement.id || d.id === secondToLastElement.id) ? "none" : "inline");
 
 let verticalPartition1 = textsAndNodes
     .append('line')
@@ -124,8 +145,9 @@ let verticalPartition1 = textsAndNodes
     .attr("x2", 33.33)
     .attr("y1", 50)
     .attr("y2", 0)
-    .style("stroke", "black")
+    .style("stroke", "#101423")
     .style("stroke-width", 2)
+    .style("display", d => (d.id === lastElement.id || d.id === secondToLastElement.id) ? "none" : "inline");
 
 let verticalPartition2 = textsAndNodes
     .append('line')
@@ -133,21 +155,9 @@ let verticalPartition2 = textsAndNodes
     .attr("x2", 66.66)
     .attr("y1", 50)
     .attr("y2", 0)
-    .style("stroke", "black")
+    .style("stroke", "#101423")
     .style("stroke-width", 2)
-
-// let startNode = svg
-//     .append('rect')
-//     .attr('class', "nodes")
-//     .attr('width', () => 60)
-//     .attr('height', () => 40)
-//     .attr('rx', 10)
-//     .attr('ry', 10)
-//     .attr('fill', function(d) {
-//         return 'white';
-//     })
-//     .attr("stroke-width", 2)
-//     .attr("stroke", () => 'black')
+    .style("display", d => (d.id === lastElement.id || d.id === secondToLastElement.id) ? "none" : "inline");
 
 function ticked() {
     link
