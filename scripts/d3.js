@@ -15,7 +15,7 @@ links.forEach(link => {
 
 let simulation = d3.forceSimulation(graph.nodes)
     .force('link', d3.forceLink(graph.links)
-        .id(function (d) { return d.id; })
+        .id(function (d)    { return d.id; })
         .distance(d => {
             if (d.slack !== undefined && d.slack !== 0) {
                 return 80 * d.slack
@@ -23,7 +23,7 @@ let simulation = d3.forceSimulation(graph.nodes)
             return 120
         })
     )
-    .force('charge', d3.forceManyBody().strength(-1500))
+    .force('charge', d3.forceManyBody().strength(-1600))
     .force("center", d3.forceCenter(width / 2, height / 2))
     .force('x', d3.forceX()) // optional: horizontal positioning
     .force('y', d3.forceY()) // optional: vertical positioning

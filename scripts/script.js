@@ -43,6 +43,7 @@ pertEntry.forEach((task, i) => {
     <tr>
         <td>${i + 1}</td>
         <td>${task.code}</td>
+        <td>${task.description}</td>
         <td>${checkPredecessor(task)}</td>
         <td>${task.a}</td>
         <td>${task.m}</td>

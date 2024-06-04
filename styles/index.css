@@ -7,8 +7,18 @@
     padding: 0;
 }
 
+:root {
+    --clr-secondary-dark-blue: #101423;
+}
+
 body {
     font-family: Poppins, sans-serif;
+}
+
+.container {
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .content-table {
@@ -19,7 +29,7 @@ body {
 }
 
 .content-table thead tr {
-    background-color: #009879;
+    background-color: #101423;
     color: #fff;
     font-weight: 600;
     text-align: left;
@@ -42,7 +52,7 @@ body {
 }
 
 .content-table tbody tr:last-of-type {
-    border-bottom: 2px solid #009879;
+    border-bottom: 2px solid #101423;
 }
 
 .content-table tbody tr:hover {
