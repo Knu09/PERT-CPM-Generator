@@ -1,3 +1,15 @@
+@font-face {
+    font-family: "PP Supply Mono";
+    src: url(fonts/PPSupplyMono-Regular.otf) format('truetype');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "PP Supply Mono";
+    src: url(fonts/PPSupplyMono-Ultralight.otf) format('truetype');
+    font-weight: normal;
+}
+
 *,
 ::before,
 ::after {
@@ -9,30 +21,68 @@
 
 :root {
     --clr-secondary-dark-blue: #101423;
+    --clr-bg-color: #1A202C;
 }
 
 body {
     font-family: Poppins, sans-serif;
+    background-color: var(--clr-bg-color);
+    color: #fff;
 }
 
 .container {
-    max-width: 1250px;
+    max-width: 1550px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 3.5em;
+}
+
+.details {
+    margin-top: 2em;
+}
+
+.details {
+}
+
+h1 {
+    font-size: clamp(28px, 4vw, 42px);
+}
+
+.details p {
+    font-family: Open Sans, sans serif;
+    color: #ddd;
+    font-size: clamp(14px, 4vw, 18px);
+    margin: 15px 0;
 }
 
 .content-table {
+    font-family: Open Sans, sans serif;
+    background-color: transparent;
+    width: 100%;
     border-collapse: collapse;
-    margin: 25px 10px;
+    margin: 40px auto 25px;
     font-size: 0.9em;
     min-width: 400px;
+    outline: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px;
+
+}
+
+.content-table thead tr{
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .content-table thead tr {
-    background-color: #101423;
-    color: #fff;
-    font-weight: 600;
+    color: #d2d2d2;
+    font-weight: 400;
     text-align: left;
+}
+
+.content-table thead td:first-child {
+    border-top-left-radius: 10px; /* Top-left corner radius */
+}
+
+.content-table thead td:last-child {
+    border-top-right-radius: 10px; /* Top-right corner radius */
 }
 
 .content-table th,
@@ -41,20 +91,41 @@ body {
 }
 
 .content-table tbody tr {
-
     cursor: pointer;
-    border-bottom: 1px solid #ddd;
+    border-top: 1px solid rgba(255,255,255,.25);
     transition: .25s;
 }
 
-.content-table tbody tr:nth-child(even) {
-    background-color: #f3f3f3;
-}
-
-.content-table tbody tr:last-of-type {
-    border-bottom: 2px solid #101423;
-}
+/*.content-table tbody tr:nth-child(even) {*/
+/*    background-color: #f3f3f3;*/
+/*}*/
 
 .content-table tbody tr:hover {
-    background-color: #ddd;
+    background-color: #2e343f;
 }
+
+/* Author Style */
+
+.copyright {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 5em;
+    margin: 2em 0;
+}
+
+.copyright .author {
+    font-family: "PP Supply Mono", sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    color: #FFFFFF99;
+    transition: 0.50s;
+}
+
+.copyright .author:hover {
+    transform: translateY(-5px);
+    color: #00FFF8;
+}
+
+/* Author Style */

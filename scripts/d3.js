@@ -13,6 +13,32 @@ links.forEach(link => {
     link.slack = codeNoToSlack[link.target]
 })
 
+// Panning and zooming
+
+const main = (({state, setState}) => {
+    const zoomBehavior = d3.zoom().on("zoom", (event) => {
+        console.log(event.transform);
+        setState((state) => ({
+            ...state,
+            transform: event.transform,
+        }))
+    })
+
+    svg.call(zoomBehavior)
+
+    const { transform } = state;
+
+    const g = svg
+        .selectAll('svg')
+        .data([null])
+        .join('g')
+
+    g.attr('transform', transform)
+
+})
+
+
+
 let simulation = d3.forceSimulation(graph.nodes)
     .force('link', d3.forceLink(graph.links)
         .id(function (d)    { return d.id; })
@@ -24,7 +50,7 @@ let simulation = d3.forceSimulation(graph.nodes)
         })
     )
     .force('charge', d3.forceManyBody().strength(-1600))
-    .force("center", d3.forceCenter(width / 2, height / 2))
+    .force("center", d3.forceCenter(width / 2.5, height / 2))
     .force('x', d3.forceX()) // optional: horizontal positioning
     .force('y', d3.forceY()) // optional: vertical positioning
     .on('tick', ticked);

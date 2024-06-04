@@ -1,6 +1,7 @@
 
 .nodes {
     cursor: grab;
+    box-shadow: 20px 20px 10px rgba(0,0,0,1);
 }
 
 .svg-container {
@@ -10,11 +11,11 @@
 }
 
 #svgContent {
+    background-color: rgb(241, 241, 241);
     min-width: 100%;
     max-width: 100%;
-    height: auto;
-    border: 3px solid #000;
     border-radius: 10px;
+    box-shadow: inset 0 0 10px 5px rgba(0,0,0,.5);
     font-family: Poppins, sans-serif;
     font-weight: bold;
     font-size: 14px;
@@ -23,9 +24,10 @@
 .node-sample {
     position: absolute;
     z-index: 100;
-    top: 20px;
-    left: 20px;
+    top: 50px;
+    left: 50px;
 }
+
 
 text {
     cursor: grab;

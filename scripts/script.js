@@ -38,10 +38,13 @@ pertEntry.forEach(task => {
         task.slack = Math.abs(task.LS - task.ES);
     })
 })
+
+const activityNo = document.querySelectorAll('.activityNo')
 pertEntry.forEach((task, i) => {
+    activityNo.innerText = `${i + 1}`
     pertHTML += `
     <tr>
-        <td>${i + 1}</td>
+        <td><input value="${i + 1}" /></td>
         <td>${task.code}</td>
         <td>${task.description}</td>
         <td>${checkPredecessor(task)}</td>
