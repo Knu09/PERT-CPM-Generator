@@ -52,6 +52,48 @@ function forceDataReload() {
     updateNodesAndLinks()
 }
 
+function removeAllData () {
+    pertEntry.length = 0
+    pertHTML = ``
+    pertEntry.push({
+        code: '',
+        description: '',
+        predecessor: [],
+        a: 0,
+        m: 0,
+        b: 0,
+        ET: 0,
+        ES: 0,
+        EF: 0,
+        LS: 0,
+        LF: 0,
+        slack: 0
+    });
+
+    pertHTML += `
+        <tr class="PERT-row">
+          <td>${pertEntry.length}</td>
+          <td><input data-index="${pertEntry.length - 1}" class="input task-input" type="text" placeholder="--"></td>
+          <td><input data-index="${pertEntry.length - 1}" class="input description-input" type="text" placeholder="Empty"></td>
+          <td><input data-index="${pertEntry.length - 1}" class="input predecessor-input" type="text" placeholder="--"></td>
+          <td><input data-index="${pertEntry.length - 1}" placeholder="0" class="input time-variability time-variability-a" /> </td>
+          <td><input data-index="${pertEntry.length - 1}" placeholder="0" class="input time-variability time-variability-m" /> </td>
+          <td><input data-index="${pertEntry.length - 1}" placeholder="0" class="input time-variability time-variability-b" /> </td>
+          <td class="estimated-time">0</td>
+          <td class="earliest-start">0</td>
+          <td class="earliest-finish">0</td>
+          <td class="latest-start">0</td>
+          <td class="latest-finish">0</td>
+          <td class="slack">0</td>
+        </tr>
+  `;
+    document.querySelector('.PERT-body').innerHTML = pertHTML;
+
+    window.nodes = []
+    window.link = []
+    updateDisplayedValues()
+}
+
 function addActivity(task) {
     pertEntry.push({
         code: '',
@@ -77,7 +119,7 @@ function addActivity(task) {
       <td><input data-index="${task.length - 1}" placeholder="0" class="input time-variability time-variability-a" /> </td>
       <td><input data-index="${task.length - 1}" placeholder="0" class="input time-variability time-variability-m" /> </td>
       <td><input data-index="${task.length - 1}" placeholder="0" class="input time-variability time-variability-b" /> </td>
-      <td>0</td>
+      <td class="estimated-time">0</td>
       <td class="earliest-start">0</td>
       <td class="earliest-finish">0</td>
       <td class="latest-start">0</td>
@@ -101,12 +143,12 @@ function updateDisplayedValues(shouldReload = true) {
     <tr class="PERT-row">
         <td>${i + 1}</td>
         <td><input data-index="${i}" class="input task-input" value="${task.code}" type="text" placeholder="--"></td>
-        <td><input data-index="${i}" class="input description-input" value="${task.description}" type="text" value="Empty"></td>
+        <td><input data-index="${i}" class="input description-input" value="${task.description}" type="text" placeholder="Empty"></td>
         <td><input data-index="${i}" class="input predecessor-input" value="${checkPredecessor(task)}" type="text" placeholder="--"></td>
         <td><input data-index="${i}" value="${task.a}" class="input time-variability time-variability-a" /> </td>
         <td><input data-index="${i}" value="${task.m}" class="input time-variability time-variability-m" /> </td>
         <td><input data-index="${i}" value="${task.b}" class="input time-variability time-variability-b" /> </td>
-        <td>${task.ET}</td>
+        <td class="estimated-time">${task.ET}</td>
         <td class="earliest-start">${task.ES}</td>
         <td class="earliest-finish">${task.EF}</td>
         <td class="latest-start">${task.LS}</td>
@@ -121,24 +163,70 @@ function updateDisplayedValues(shouldReload = true) {
     }
 }
 
+
 function inputEvents() {
     const allInputs = document.querySelectorAll('input')
     allInputs.forEach(input => {
+        let previousValue = input.value;
+
         input.addEventListener('change', (event, i) => {
             const taskIndex = parseInt(event.target.dataset.index);
 
+            function validateVariablity (inputClass, value) {
+                const floatValue = parseFloat(value);
+                if (floatValue > -1 && floatValue < 100) {
+                    pertEntry[taskIndex][inputClass] = floatValue
+                } else if (isNaN(floatValue)) {
+                    alert(`Variability Value should be a number!`)
+                } else {
+                    alert(`Invalid variability value: ${floatValue}. Variability values cannot be negative or greater than 100.`);
+                }
+            }
             if (input.classList.contains('time-variability-a')) {
-                pertEntry[taskIndex].a = parseFloat(event.target.value);
+                validateVariablity('a', event.target.value)
             } else if (input.classList.contains('time-variability-m')) {
-                pertEntry[taskIndex].m = parseFloat(event.target.value);
+                validateVariablity('m', event.target.value)
             } else if (input.classList.contains('time-variability-b')) {
-                pertEntry[taskIndex].b = parseFloat(event.target.value);
+                validateVariablity('b', event.target.value)
             } else if (input.classList.contains('task-input')) {
-                pertEntry[taskIndex].code = event.target.value
+                const taskArr = event.target.value.replace(/\s/g, '').toUpperCase();
+                if (taskArr.length < 1) {
+                    alert(`Please insert a task in No. ${taskIndex + 1}`)
+                } else if (taskArr.length > 2) {
+                    alert(`Invalid task code: ${taskArr.join('')}. Task codes must be up to 2 characters in length.`)
+                } else {
+                    const hasMatchingPred = pertEntry.some(task => task.predecessor.includes(previousValue));
+                    const hasMatchingTask = pertEntry.some(task => task.code.includes(taskArr))
+                    if (hasMatchingTask) {
+                        alert(`The task code ${taskArr} is already in use.`);
+                    } else {
+                        if (hasMatchingPred) {
+                            pertEntry.forEach(task => {
+                                const predIndex = task.predecessor.indexOf(previousValue);
+                                if (predIndex !== -1) {
+                                    task.predecessor.splice(predIndex, 1, taskArr); // Remove the matching predecessor
+                                }
+                            });
+                            alert(`The predecessor of task code ${previousValue} has been replaced with the new predecessor ${taskArr}.`);
+                        } else {
+                            pertEntry[taskIndex].code = taskArr
+                        }
+                    }
+                }
+
             } else if (input.classList.contains('description-input')) {
                 pertEntry[taskIndex].description = event.target.value
             } else if (input.classList.contains('predecessor-input')) {
-                pertEntry[taskIndex].predecessor = event.target.value
+                pertEntry[taskIndex].predecessor.length = 0
+                const splitPred = (event.target.value).split(',').map(code => code.trim());
+                const invalidPred = splitPred.filter(pred => !pertEntry.slice(0, taskIndex).some(task => task.code === pred))
+                if (invalidPred.length > 0) {
+                    alert(`Invalid predecessor codes: ${splitPred.join(', ')}`);
+                } else {
+                    splitPred.forEach(pred => {
+                        pertEntry[taskIndex].predecessor.push(pred);
+                    });
+                }
             }
             calculatePertValues(pertEntry)
             updateNodesAndLinks()
@@ -211,7 +299,11 @@ updateNodesAndLinks()
 // button selectors
 const addActivityBtn = document.querySelector(".add-button")
 const forceReloadData = document.querySelector(".update-button")
+const removeAllDataBtn = document.querySelector('.remove-button')
 
 addActivityBtn.addEventListener('click', addActivity)
 forceReloadData.addEventListener('click', forceDataReload)
+removeAllDataBtn.addEventListener('click', () => {
+    removeAllData(pertEntry)
+})
 

@@ -1,4 +1,4 @@
-const pertEntry = [
+let pertEntry = [
     {
         codeNo: 1,
         code: "A",
