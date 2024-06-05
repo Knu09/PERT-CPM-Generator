@@ -5,13 +5,21 @@
     <link rel="stylesheet" href="styles/index.css">
     <link rel="stylesheet" href="styles/network.css">
     <title>Graph Sample</title>
+
+    <!--FONT AWESOME-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </head>
 <body>
     <div class="container">
         <div class="details">
-            <h1>PERT and CPM</h1>
+            <h1>PERT and CPM Generator</h1>
             <p>Project Evaluation and Review Technique (PERT) and Critical Path Method (CPM) are both useful tools when planning and controlling a project. PERT and CPM are complementary and both are important analytical techniques in project management when managing tasks.</p>
             <p> This website provides an efficient tool for evaluating and calculation for project management, this tool help to determine and visualize how much time it will take to complete a specific project.</p>
+        </div>
+        <div class="modification">
+            <button class="button add-button"><span class="button-icon icon"><i class="fa-solid fa-circle-plus"></i></span>Add activity</button>
+            <button class="button update-button"><span class="button-icon icon"><i class="fa-solid fa-rotate"></i></span>Force data reload</button>
+            <button class="button remove-button"><span class="button-icon icon"><i class="fa-solid fa-trash-can"></i></span>Remove all</button>
         </div>
         <table class="content-table">
             <thead>
@@ -32,9 +40,7 @@
                 </tr>
             </thead>
             <tbody class="PERT-body">
-                <tr class="PERT-row">
 
-                </tr>
             </tbody>
         </table>
 

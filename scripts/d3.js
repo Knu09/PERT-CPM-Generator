@@ -44,7 +44,7 @@ let simulation = d3.forceSimulation(graph.nodes)
         .id(function (d)    { return d.id; })
         .distance(d => {
             if (d.slack !== undefined && d.slack !== 0) {
-                return 80 * d.slack
+                return 120 + (d.slack * 30)
             }
             return 120
         })
