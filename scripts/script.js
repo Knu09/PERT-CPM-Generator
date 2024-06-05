@@ -8,6 +8,7 @@ const findTaskByCode = code => pertEntry.find(task => task.code === code)
 let pertHTML = '';
 
 function calculatePertValues(pertEntry) {
+
     pertEntry.forEach(task => {
 
         // Computation for Expected Time.
@@ -24,6 +25,7 @@ function calculatePertValues(pertEntry) {
         }
         task.EF = task.ES + task.ET;
 
+        // Computation for Backward Pass
         const maxEF = Math.max(...pertEntry.map(task => task.EF))
         pertEntry.slice().reverse().forEach(task => {
             if (pertEntry.every(t => !t.predecessor.includes(task.code))) {
@@ -37,29 +39,23 @@ function calculatePertValues(pertEntry) {
             task.LS = task.LF - task.ET;
         })
 
+        // Computation for Slack
         pertEntry.forEach(task => {
             task.slack = Math.abs(task.LS - task.ES);
         })
     })
 }
 
-calculatePertValues(pertEntry)
-updateDisplayedValues()
-
-// button selectors
-const addActivityBtn = document.querySelector(".add-button")
-const forceReloadData = document.querySelector(".update-button")
-
-addActivityBtn.addEventListener('click', () => {
-    addActivity(pertEntry)
-})
-
-
+function forceDataReload() {
+    calculatePertValues(pertEntry)
+    updateDisplayedValues()
+    updateNodesAndLinks()
+}
 
 function addActivity(task) {
     pertEntry.push({
         code: '',
-        description: 'Empty Activity',
+        description: '',
         predecessor: [],
         a: 0,
         m: 0,
@@ -75,12 +71,12 @@ function addActivity(task) {
     pertHTML += `
     <tr class="PERT-row">
       <td>${task.length}</td>
-      <td><input class="task-input" type="text" placeholder="--"></td>
-      <td><input class="description-input" type="text" placeholder="Empty"></td>
-      <td><input class="predecessor-input" type="text" placeholder="--"></td>
-      <td><input data-index="${task.length - 1}" placeholder="0" class="time-variability time-variability-a" /> </td>
-      <td><input data-index="${task.length - 1}" placeholder="0" class="time-variability time-variability-m" /> </td>
-      <td><input data-index="${task.length - 1}" placeholder="0" class="time-variability time-variability-b" /> </td>
+      <td><input data-index="${task.length - 1}" class="input task-input" type="text" placeholder="--"></td>
+      <td><input data-index="${task.length - 1}" class="input description-input" type="text" placeholder="Empty"></td>
+      <td><input data-index="${task.length - 1}" class="input predecessor-input" type="text" placeholder="--"></td>
+      <td><input data-index="${task.length - 1}" placeholder="0" class="input time-variability time-variability-a" /> </td>
+      <td><input data-index="${task.length - 1}" placeholder="0" class="input time-variability time-variability-m" /> </td>
+      <td><input data-index="${task.length - 1}" placeholder="0" class="input time-variability time-variability-b" /> </td>
       <td>0</td>
       <td class="earliest-start">0</td>
       <td class="earliest-finish">0</td>
@@ -89,25 +85,27 @@ function addActivity(task) {
       <td class="slack">0</td>
     </tr>
   `;
-
     document.querySelector('.PERT-body').innerHTML = pertHTML;
+    inputEvents();
+    calculatePertValues(pertEntry)
+    updateNodesAndLinks()
+    forceDataReload(false)
 }
 
-function forceDataReload() {
+function updateDisplayedValues(shouldReload = true) {
 
-}
+    pertHTML = ``;
 
-function updateDisplayedValues() {
     pertEntry.forEach((task, i) => {
         pertHTML += `
     <tr class="PERT-row">
         <td>${i + 1}</td>
-        <td><input class="task-input" value="${task.code}" type="text" placeholder="--"></td>
-        <td><input class="description-input" value="${task.description}" type="text" value="Empty"></td>
-        <td><input class="predecessor-input" value="${checkPredecessor(task)}" type="text" placeholder="--"></td>
-        <td><input data-index="${i}" value="${task.a}" class="time-variability time-variability-a" /> </td>
-        <td><input data-index="${i}" value="${task.m}" class="time-variability time-variability-m" /> </td>
-        <td><input data-index="${i}" value="${task.b}" class="time-variability time-variability-b" /> </td>
+        <td><input data-index="${i}" class="input task-input" value="${task.code}" type="text" placeholder="--"></td>
+        <td><input data-index="${i}" class="input description-input" value="${task.description}" type="text" value="Empty"></td>
+        <td><input data-index="${i}" class="input predecessor-input" value="${checkPredecessor(task)}" type="text" placeholder="--"></td>
+        <td><input data-index="${i}" value="${task.a}" class="input time-variability time-variability-a" /> </td>
+        <td><input data-index="${i}" value="${task.m}" class="input time-variability time-variability-m" /> </td>
+        <td><input data-index="${i}" value="${task.b}" class="input time-variability time-variability-b" /> </td>
         <td>${task.ET}</td>
         <td class="earliest-start">${task.ES}</td>
         <td class="earliest-finish">${task.EF}</td>
@@ -118,78 +116,102 @@ function updateDisplayedValues() {
     `
     })
     document.querySelector('.PERT-body').innerHTML = pertHTML;
+    if (shouldReload) {
+        inputEvents()
+    }
 }
 
-const timeVariabilityInputs = document.querySelectorAll(".time-variability");
+function inputEvents() {
+    const allInputs = document.querySelectorAll('input')
+    allInputs.forEach(input => {
+        input.addEventListener('change', (event, i) => {
+            const taskIndex = parseInt(event.target.dataset.index);
 
-timeVariabilityInputs.forEach(input => {
-    input.addEventListener('change', (event, i) => {
-        console.log(event.target)
-        const taskIndex = parseInt(event.target.dataset.index);
-        console.log(taskIndex)
-
-        if (input.classList.contains('time-variability-a')) {
-            pertEntry[taskIndex].a = parseFloat(event.target.value);
-        } else if (input.classList.contains('time-variability-m')) {
-            pertEntry[taskIndex].m = parseFloat(event.target.value);
-        } else if (input.classList.contains('time-variability-b')) {
-            pertEntry[taskIndex].b = parseFloat(event.target.value);
-        }
-        pertHTML = ``;
-
-
-        calculatePertValues(pertEntry);
-        updateDisplayedValues()
+            if (input.classList.contains('time-variability-a')) {
+                pertEntry[taskIndex].a = parseFloat(event.target.value);
+            } else if (input.classList.contains('time-variability-m')) {
+                pertEntry[taskIndex].m = parseFloat(event.target.value);
+            } else if (input.classList.contains('time-variability-b')) {
+                pertEntry[taskIndex].b = parseFloat(event.target.value);
+            } else if (input.classList.contains('task-input')) {
+                pertEntry[taskIndex].code = event.target.value
+            } else if (input.classList.contains('description-input')) {
+                pertEntry[taskIndex].description = event.target.value
+            } else if (input.classList.contains('predecessor-input')) {
+                pertEntry[taskIndex].predecessor = event.target.value
+            }
+            calculatePertValues(pertEntry)
+            updateNodesAndLinks()
+            updateDisplayedValues()
+        })
     })
-})
+}
 
-
-const nodes = pertEntry.map(task => ({
-    id: task.codeNo,
-    name: task.code
-}))
+function updateNodesAndLinks () {
+    const nodes = pertEntry.map(task => ({
+        id: task.codeNo,
+        name: task.code
+    }))
 
 // Adding "start" and "Finish" nodes
-nodes.push({id: "start", name: "Start"});
-nodes.push({id: "finish", name: "Finish"});
+    nodes.push({id: "start", name: "Start"});
+    nodes.push({id: "finish", name: "Finish"});
 
-const codeToId = {}
-pertEntry.forEach(task => {
-    codeToId[task.code] = task.codeNo
-})
+// Converting Task Code to an ID
+    const codeToId = {}
+    pertEntry.forEach(task => {
+        codeToId[task.code] = task.codeNo
+    })
 
-const links = []
-pertEntry.forEach(task => {
-    task.predecessor.forEach(pre => {
-        links.push({
-            source: codeToId[pre],
-            target: task.codeNo
+// Linking a node to a target
+    const links = []
+    pertEntry.forEach(task => {
+        task.predecessor.forEach(pre => {
+            links.push({
+                source: codeToId[pre],
+                target: task.codeNo
+            })
         })
     })
-})
 
-pertEntry.forEach(task => {
-    if (task.predecessor.length === 0) {
-        links.push({
-            source: 'start',
-            target: task.codeNo
-        })
-    }
-})
-
-const nodeIdsWithSuccessors = new Set();
-pertEntry.forEach(task => {
-    task.predecessor.forEach(pre => {
-        nodeIdsWithSuccessors.add(codeToId[pre])
+    pertEntry.forEach(task => {
+        if (task.predecessor.length === 0) {
+            links.push({
+                source: 'start',
+                target: task.codeNo
+            })
+        }
     })
-})
-pertEntry.forEach(task => {
-    if (!nodeIdsWithSuccessors.has(task.codeNo)) {
-        links.push({
-            source: task.codeNo,
-            target: "finish"
-        })
-    }
-})
 
+    const nodeIdsWithSuccessors = new Set();
+    pertEntry.forEach(task => {
+        task.predecessor.forEach(pre => {
+            nodeIdsWithSuccessors.add(codeToId[pre])
+        })
+    })
+    pertEntry.forEach(task => {
+        if (!nodeIdsWithSuccessors.has(task.codeNo)) {
+            links.push({
+                source: task.codeNo,
+                target: "finish"
+            })
+        }
+    })
+
+// update for the global variable
+    window.nodes = nodes;
+    window.links = links;
+
+}
+
+calculatePertValues(pertEntry)
+updateDisplayedValues()
+updateNodesAndLinks()
+
+// button selectors
+const addActivityBtn = document.querySelector(".add-button")
+const forceReloadData = document.querySelector(".update-button")
+
+addActivityBtn.addEventListener('click', addActivity)
+forceReloadData.addEventListener('click', forceDataReload)
 

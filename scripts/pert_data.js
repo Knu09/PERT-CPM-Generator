@@ -73,7 +73,7 @@ const pertEntry = [
     },
     {
         codeNo: 9,
-        code: "G",
+        code: "I",
         predecessor: ["F"],
         description: "Sample Activity",
         a: 2,
