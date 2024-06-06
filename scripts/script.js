@@ -98,12 +98,12 @@ function removeAllData () {
 
     window.nodes = []
     window.link = []
-
-    graph.nodes.length = 0
-    graph.links.length = 0
-
+    //
+    // graph.nodes.length = 0
+    // graph.links.length = 0
+    //
     updateDisplayedValues()
-    updateNodesAndLinks()
+    // updateNodesAndLinks()
     // displayGraph(nodes, links)
 }
 
@@ -149,7 +149,7 @@ function addActivity(task) {
     calculatePertValues(pertEntry)
 
 
-    updateNodesAndLinks()
+    // updateNodesAndLinks()
 
     // displayGraph(window.nodes, window.links)
     console.log(nodes, links)
