@@ -107,8 +107,8 @@ function displayGraph (nodes, links) {
     newLinkGroup
         .append('line')
         .data(links)
-        .attr('stroke-width', 2)
-        .style('stroke', d => allCriticalPaths.includes(d) ? "red" : "black")
+        .attr('stroke-width', 3)
+        .style('stroke', d => allCriticalPaths.includes(d) ? "#37B6D4" : "white")
     newLinkGroup
         .append('text')
         .attr('class', 'link-label')
@@ -116,6 +116,7 @@ function displayGraph (nodes, links) {
         .data(links)
         .text(d => d.slack)
         .style('font-size', '16px')
+        .style('fill', 'rgb(212,255,248)')
         .attr('dy', -10)
 
 
@@ -142,9 +143,10 @@ function displayGraph (nodes, links) {
         .attr('height', () => 50)
         .attr('rx', 10)
         .attr('ry', 10)
-        .attr('fill', 'white')
+        .attr('fill', '#101423')
         .attr("stroke-width", 2)
-        .attr("stroke", () => 'black')
+        .data(links)
+        .attr("stroke", "#37B6D4")
 
     nodeEnter
         .append('path')
@@ -152,7 +154,8 @@ function displayGraph (nodes, links) {
         .attr("d", d => d.index === nodes.length - 1 || d.index === nodes.length - 2 ?
             "M 10 0H 90C 95.5228 0 100 4.47715 100 10V 40C 100 45.5228 95.5228 50 90 50H 10C 4.47715 50 0 45.5228 0 40V 10C 0 4.47715 4.47715 0 10 0Z " :
             "M0 10C0 4.47715 4.47715 0 10 0H33.33V25.5H0V10Z")
-        .attr("fill", "#101423")
+        .data(links)
+        .attr("fill", "#37B6D4")
 
     nodeEnter
         .append("text")
@@ -160,7 +163,7 @@ function displayGraph (nodes, links) {
         .text(d => d.name)
         .attr('x', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 26 : 12)
         .attr('y', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 28 : 18)
-        .style('fill', "white")
+        .style('fill', "#000")
         .style('z-index', 100)
 
     nodeEnter
@@ -211,7 +214,7 @@ function displayGraph (nodes, links) {
         .attr("x2", 100)
         .attr("y1", 26)
         .attr("y2", 26)
-        .style("stroke", "#101423")
+        .style("stroke", "#37b6d4")
         .style("stroke-width", 2)
         .style('display', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 'none' : 'inline');
 
@@ -223,7 +226,7 @@ function displayGraph (nodes, links) {
         .attr("x2", 33.33)
         .attr("y1", 50)
         .attr("y2", 0)
-        .style("stroke", "#101423")
+        .style("stroke", "#37b6d4")
         .style("stroke-width", 2)
         .style('display', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 'none' : 'inline');
 
@@ -234,7 +237,7 @@ function displayGraph (nodes, links) {
         .attr("x2", 66.66)
         .attr("y1", 50)
         .attr("y2", 0)
-        .style("stroke", "#101423")
+        .style("stroke", "#37b6d4")
         .style("stroke-width", 2)
         .style('display', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 'none' : 'inline');
 

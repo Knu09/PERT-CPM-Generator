@@ -49,8 +49,8 @@ const pertEntry = [
         code: "F",
         predecessor: ["E"],
         description: "Coding (Gantt Chart)",
-        a: 2,
-        m: 3,
+        a: 3,
+        m: 4,
         b: 5,
     },
     {

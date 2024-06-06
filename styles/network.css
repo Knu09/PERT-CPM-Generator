@@ -5,17 +5,19 @@
 }
 
 .svg-container {
+    border-radius: 10px;
+    background-color: var(--clr-primary-dark-blue);
     position: relative;
     display: flex;
+    flex-direction: column;
     justify-content: center;
 }
 
 #svgContent {
-    background-color: white;
+    background-color: var(--clr-primary-dark-blue);
+
     min-width: 100%;
     max-width: 100%;
-    border-radius: 10px;
-    box-shadow: inset 0 0 10px 5px rgba(0,0,0,.5);
     font-family: Poppins, sans-serif;
     font-weight: bold;
     font-size: 14px;
@@ -24,12 +26,13 @@
 .node-sample {
     position: absolute;
     z-index: 100;
-    top: 50px;
-    left: 50px;
+    top: 100px;
+    left: 35px;
 }
 
 
 text {
+    fill: #BCBCBC;
     cursor: grab;
     text-transform: uppercase;
 }
