@@ -2,46 +2,6 @@ svg = d3.select('#svgContent')
 width = +svg.attr('width');
 height = +svg.attr('height');
 
-const startNode = graph.nodes.find(node => node.id === "start")
-const finishNode = graph.nodes.find(node => node.id === "finish")
-
-// Identify the Critical Path Links
-const criticalPathLinks = links.filter (link => {
-    const sourceTask = pertEntry.find(task => task.codeNo === link.source);
-    const targetTask = pertEntry.find(task => task.codeNo === link.target);
-    return sourceTask && targetTask && sourceTask.slack === 0 && targetTask.slack === 0;
-})
-
-const startFinishBoundaries = () => {
-    const additionalLinks = []
-    // Finding the critical path from start node
-    if (startNode) {
-        links.forEach(link => {
-            if (link.source === startNode.id) {
-                const targetTask = pertEntry.find(task => task.codeNo === link.target)
-                if (targetTask && targetTask.slack === 0) {
-                    additionalLinks.push(link);
-                }
-            }
-        })
-    }
-
-    // Finding the critical path from finish node
-    if (finishNode) {
-        links.forEach(link => {
-            if (link.target === finishNode.id) {
-                const sourceTask = pertEntry.find(task => task.codeNo === link.source)
-                if (sourceTask && sourceTask.slack === 0) {
-                    additionalLinks.push(link);
-                }
-            }
-        })
-    }
-    return additionalLinks;
-}
-
-const startFinishSlackLinks = startFinishBoundaries();
-const allCriticalPaths = [...criticalPathLinks, ...startFinishSlackLinks]
 function displayGraph (nodes, links) {
     // Clear existing elements in the Network Graph before redrawing.
     svg.selectAll('*').remove();
@@ -54,6 +14,47 @@ function displayGraph (nodes, links) {
     links.forEach(link => {
         link.slack = codeNoToSlack[link.target]
     })
+
+    const startNode = nodes.find(node => node.id === "start")
+    const finishNode = nodes.find(node => node.id === "finish")
+
+// Identify the Critical Path Links
+    const criticalPathLinks = links.filter (link => {
+        const sourceTask = pertEntry.find(task => task.codeNo === link.source);
+        const targetTask = pertEntry.find(task => task.codeNo === link.target);
+        return sourceTask && targetTask && sourceTask.slack === 0 && targetTask.slack === 0;
+    })
+
+    const startFinishBoundaries = () => {
+        const additionalLinks = []
+        // Finding the critical path from start node
+        if (startNode) {
+            links.forEach(link => {
+                if (link.source === startNode.id) {
+                    const targetTask = pertEntry.find(task => task.codeNo === link.target)
+                    if (targetTask && targetTask.slack === 0) {
+                        additionalLinks.push(link);
+                    }
+                }
+            })
+        }
+
+        // Finding the critical path from finish node
+        if (finishNode) {
+            links.forEach(link => {
+                if (link.target === finishNode.id) {
+                    const sourceTask = pertEntry.find(task => task.codeNo === link.source)
+                    if (sourceTask && sourceTask.slack === 0) {
+                        additionalLinks.push(link);
+                    }
+                }
+            })
+        }
+        return additionalLinks;
+    }
+
+    const startFinishSlackLinks = startFinishBoundaries();
+    const allCriticalPaths = [...criticalPathLinks, ...startFinishSlackLinks]
 
 // Panning and zooming
 
@@ -89,7 +90,7 @@ function displayGraph (nodes, links) {
                 return 120
             })
         )
-        .force('charge', d3.forceManyBody().strength(-1600))
+        .force('charge', d3.forceManyBody().strength(-1800))
         .force("center", d3.forceCenter(width / 2.5, height / 2))
         .force('x', d3.forceX()) // optional: horizontal positioning
         .force('y', d3.forceY()) // optional: vertical positioning
@@ -97,19 +98,12 @@ function displayGraph (nodes, links) {
 
     // Link elements
     let link = svg.selectAll('.link')
-        .data(graph.links, d => `${d.source.id}-${d.target.id}`);
-
-    // link.enter()
-    //     .append('line')
-    //     .attr('class', 'link')
-    //     .attr('stroke-width', 2)
-    //     .style('stroke', 'black')
-    //     .merge(link);
+        .data(links, d => `${d.source.id}-${d.target.id}`);
 
     link = svg
         .append('g')
         .selectAll('line')
-        .data(graph.links)
+        .data(links)
         .enter()
         .append('line')
         .attr('stroke-width', 2)
@@ -235,8 +229,14 @@ function displayGraph (nodes, links) {
 
     node.exit().remove()
 
+    console.log(graph.links)
+    console.log(links)
     function ticked() {
+
+
+
         link
+            .data(links)
             .attr("x1", function(d) { return d.source.x; })
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })

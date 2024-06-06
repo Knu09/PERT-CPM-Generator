@@ -41,7 +41,7 @@ function calculatePertValues(pertEntry) {
 
         // Computation for Slack
         pertEntry.forEach((task, i) => {
-            task.slack = Math.abs(task.LS - task.ES);
+            task.slack = Math.abs(task.EF - task.LF);
             if (task.slack === 0) {
                 task.criticalPath = true;
             } else {
@@ -54,8 +54,8 @@ function calculatePertValues(pertEntry) {
 function forceDataReload() {
     calculatePertValues(pertEntry)
     updateDisplayedValues()
-    // updateNodesAndLinks()
-    // displayGraph(window.nodes, window.links)
+    updateNodesAndLinks()
+    displayGraph(window.nodes, window.links)
 }
 
 function removeAllData () {
@@ -103,12 +103,12 @@ function removeAllData () {
     // graph.links.length = 0
     //
     updateDisplayedValues()
-    // updateNodesAndLinks()
-    // displayGraph(nodes, links)
+    updateNodesAndLinks()
+    displayGraph(nodes, links)
 }
 
 function addActivity(task) {
-    const newCode = String.fromCharCode(65 + task.length)
+    const newCode = String.fromCharCode(65 + task.length - 1)
     pertEntry.push({
         codeNo: task.length + 1,
         code: newCode,
@@ -149,9 +149,9 @@ function addActivity(task) {
     calculatePertValues(pertEntry)
 
 
-    // updateNodesAndLinks()
+    updateNodesAndLinks()
 
-    // displayGraph(window.nodes, window.links)
+    displayGraph(window.nodes, window.links)
     console.log(nodes, links)
 
 }
@@ -252,7 +252,8 @@ function inputEvents() {
             }
             calculatePertValues(pertEntry)
             updateDisplayedValues()
-            // displayGraph(nodes, links)
+            updateNodesAndLinks()
+            displayGraph(nodes, links)
         })
     })
 }
@@ -285,7 +286,9 @@ function updateNodesAndLinks () {
                 })
             })
         })
+        console.log(links)
 
+        // Linking Start node to a none predecessor nodes
         pertEntry.forEach(task => {
             if (task.predecessor.length === 0) {
                 links.push({
@@ -295,6 +298,7 @@ function updateNodesAndLinks () {
             }
         })
 
+        // Linking Finish node to a none successor nodes
         const nodeIdsWithSuccessors = new Set();
         pertEntry.forEach(task => {
             task.predecessor.forEach(pre => {

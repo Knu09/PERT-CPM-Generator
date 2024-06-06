@@ -43,20 +43,22 @@ body {
 
 .details {
     max-width: 800px;
+    width: 100%;
 }
 
 h1 {
     margin-top: 30px;
     font-weight: 600;
-    font-size: clamp(32px, 6vw, 36px);
+    font-size: clamp(32px, 2vw, 36px);
     color: rgb(221, 221, 221);
 }
 
 .details p {
     font-family: Helvetica, sans-serif;
     color: rgba(221, 221, 221, 0.8);
-    font-size: clamp(12px, 2vw, 17px);
+    font-size: clamp(14px, 4vw, 20px);
     margin: 15px 0;
+    line-height: clamp(12px, 4vw, 24px);
 }
 
 .pert-table {
@@ -218,7 +220,8 @@ input {
 }
 
 .icon {
-    padding-right: 8px;
+    font-size: clamp(12px,vw, 16px);
+    padding-right: 4px;
 }
 
 .button:hover {
