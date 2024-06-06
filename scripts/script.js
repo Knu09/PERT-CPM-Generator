@@ -54,14 +54,16 @@ function calculatePertValues(pertEntry) {
 function forceDataReload() {
     calculatePertValues(pertEntry)
     updateDisplayedValues()
-    updateNodesAndLinks()
+    // updateNodesAndLinks()
+    // displayGraph(window.nodes, window.links)
 }
 
 function removeAllData () {
     pertEntry.length = 0
     pertHTML = ``
     pertEntry.push({
-        code: '',
+        codeNo: 1,
+        code: 'A',
         description: '',
         predecessor: [],
         a: 0,
@@ -77,8 +79,8 @@ function removeAllData () {
 
     pertHTML += `
         <tr class="PERT-row">
-          <td>${pertEntry.length}</td>
-          <td><input data-index="${pertEntry.length - 1}" class="input task-input" type="text" placeholder="--"></td>
+          <td>${pertEntry.codeNo}</td>
+          <td><input data-index="${pertEntry.length - 1}" class="input task-input" type="text" placeholder="--" value="A"></td>
           <td><input data-index="${pertEntry.length - 1}" class="input description-input" type="text" placeholder="Empty"></td>
           <td><input data-index="${pertEntry.length - 1}" class="input predecessor-input" type="text" placeholder="--"></td>
           <td><input data-index="${pertEntry.length - 1}" placeholder="0" class="input time-variability time-variability-a" /> </td>
@@ -96,17 +98,25 @@ function removeAllData () {
 
     window.nodes = []
     window.link = []
+
+    graph.nodes.length = 0
+    graph.links.length = 0
+
     updateDisplayedValues()
+    updateNodesAndLinks()
+    // displayGraph(nodes, links)
 }
 
 function addActivity(task) {
+    const newCode = String.fromCharCode(65 + task.length)
     pertEntry.push({
-        code: '',
+        codeNo: task.length + 1,
+        code: newCode,
         description: '',
         predecessor: [],
-        a: 0,
-        m: 0,
-        b: 0,
+        a: 4,
+        m: 3,
+        b: 2,
         ET: 0,
         ES: 0,
         EF: 0,
@@ -133,14 +143,20 @@ function addActivity(task) {
     </tr>
   `;
     document.querySelector('.PERT-body').innerHTML = pertHTML;
+
     inputEvents();
+
     calculatePertValues(pertEntry)
+
+
     updateNodesAndLinks()
-    forceDataReload(false)
+
+    // displayGraph(window.nodes, window.links)
+    console.log(nodes, links)
+
 }
 
 function updateDisplayedValues(shouldReload = true) {
-
     pertHTML = ``;
 
     pertEntry.forEach((task, i) => {
@@ -236,79 +252,84 @@ function inputEvents() {
             }
             calculatePertValues(pertEntry)
             updateDisplayedValues()
+            // displayGraph(nodes, links)
         })
     })
 }
 
-const nodes = pertEntry.map(task => ({
-    id: task.codeNo,
-    name: task.code
-}))
+function updateNodesAndLinks () {
+    if (pertEntry.length > 0) {
+        const nodes = pertEntry.map(task => ({
+            id: task.codeNo,
+            name: task.code
+        }))
 
 // Adding "start" and "Finish" nodes
-nodes.push({id: "start", name: "Start"});
-nodes.push({id: "finish", name: "Finish"});
+        nodes.push({id: "start", name: "Start"});
+        nodes.push({id: "finish", name: "Finish"});
 
 // Converting Task Code to an ID
-const codeToId = {}
-pertEntry.forEach(task => {
-    codeToId[task.code] = task.codeNo
-})
-
-// Linking a node to a target
-const links = []
-pertEntry.forEach(task => {
-    task.predecessor.forEach(pre => {
-        links.push({
-            source: codeToId[pre],
-            target: task.codeNo,
-            criticalPath: task.criticalPath
+        const codeToId = {}
+        pertEntry.forEach(task => {
+            codeToId[task.code] = task.codeNo
         })
-    })
-})
 
-pertEntry.forEach(task => {
-    if (task.predecessor.length === 0) {
-        links.push({
-            source: 'start',
-            target: task.codeNo
+        // Linking a node to a target
+        const links = []
+        pertEntry.forEach(task => {
+            task.predecessor.forEach(pre => {
+                links.push({
+                    source: codeToId[pre],
+                    target: task.codeNo,
+                    criticalPath: task.criticalPath
+                })
+            })
         })
+
+        pertEntry.forEach(task => {
+            if (task.predecessor.length === 0) {
+                links.push({
+                    source: 'start',
+                    target: task.codeNo
+                })
+            }
+        })
+
+        const nodeIdsWithSuccessors = new Set();
+        pertEntry.forEach(task => {
+            task.predecessor.forEach(pre => {
+                nodeIdsWithSuccessors.add(codeToId[pre])
+            })
+        })
+        pertEntry.forEach(task => {
+            if (!nodeIdsWithSuccessors.has(task.codeNo)) {
+                links.push({
+                    source: task.codeNo,
+                    target: "finish"
+                })
+            }
+        })
+
+        // update for the global variable
+        window.nodes = nodes;
+        window.links = links;
+
+
     }
-})
-
-const nodeIdsWithSuccessors = new Set();
-pertEntry.forEach(task => {
-    task.predecessor.forEach(pre => {
-        nodeIdsWithSuccessors.add(codeToId[pre])
-    })
-})
-pertEntry.forEach(task => {
-    if (!nodeIdsWithSuccessors.has(task.codeNo)) {
-        links.push({
-            source: task.codeNo,
-            target: "finish"
-        })
-    }
-})
-
-// update for the global variable
-window.nodes = nodes;
-window.links = links;
-
-// updateGraph(nodes, links);
-
-calculatePertValues(pertEntry)
-updateDisplayedValues()
-
+}
 
 // button selectors
 const addActivityBtn = document.querySelector(".add-button")
 const forceReloadData = document.querySelector(".update-button")
 const removeAllDataBtn = document.querySelector('.remove-button')
-
-addActivityBtn.addEventListener('click', addActivity)
+addActivityBtn.addEventListener('click', () => {
+    addActivity(pertEntry)
+})
 forceReloadData.addEventListener('click', forceDataReload)
 removeAllDataBtn.addEventListener('click', () => {
     removeAllData(pertEntry)
 })
 
+calculatePertValues(pertEntry)
+updateDisplayedValues()
+updateNodesAndLinks()

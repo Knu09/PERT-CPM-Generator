@@ -2,8 +2,50 @@ svg = d3.select('#svgContent')
 width = +svg.attr('width');
 height = +svg.attr('height');
 
+const startNode = graph.nodes.find(node => node.id === "start")
+const finishNode = graph.nodes.find(node => node.id === "finish")
 
-function updateGraph (nodes, links) {
+// Identify the Critical Path Links
+const criticalPathLinks = links.filter (link => {
+    const sourceTask = pertEntry.find(task => task.codeNo === link.source);
+    const targetTask = pertEntry.find(task => task.codeNo === link.target);
+    return sourceTask && targetTask && sourceTask.slack === 0 && targetTask.slack === 0;
+})
+
+const startFinishBoundaries = () => {
+    const additionalLinks = []
+    // Finding the critical path from start node
+    if (startNode) {
+        links.forEach(link => {
+            if (link.source === startNode.id) {
+                const targetTask = pertEntry.find(task => task.codeNo === link.target)
+                if (targetTask && targetTask.slack === 0) {
+                    additionalLinks.push(link);
+                }
+            }
+        })
+    }
+
+    // Finding the critical path from finish node
+    if (finishNode) {
+        links.forEach(link => {
+            if (link.target === finishNode.id) {
+                const sourceTask = pertEntry.find(task => task.codeNo === link.source)
+                if (sourceTask && sourceTask.slack === 0) {
+                    additionalLinks.push(link);
+                }
+            }
+        })
+    }
+    return additionalLinks;
+}
+
+const startFinishSlackLinks = startFinishBoundaries();
+const allCriticalPaths = [...criticalPathLinks, ...startFinishSlackLinks]
+function displayGraph (nodes, links) {
+    // Clear existing elements in the Network Graph before redrawing.
+    svg.selectAll('*').remove();
+
     const codeNoToSlack = {};
     pertEntry.forEach(task => {
         codeNoToSlack[task.codeNo] = task.slack
@@ -12,47 +54,6 @@ function updateGraph (nodes, links) {
     links.forEach(link => {
         link.slack = codeNoToSlack[link.target]
     })
-
-    const startNode = graph.nodes.find(node => node.id === "start")
-    const finishNode = graph.nodes.find(node => node.id === "finish")
-
-// Identify the Critical Path Links
-    const criticalPathLinks = links.filter (link => {
-        const sourceTask = pertEntry.find(task => task.codeNo === link.source);
-        const targetTask = pertEntry.find(task => task.codeNo === link.target);
-        return sourceTask && targetTask && sourceTask.slack === 0 && targetTask.slack === 0;
-    })
-
-    const startFinishBoundaries = () => {
-        const additionalLinks = []
-        // Finding the critical path from start node
-        if (startNode) {
-            links.forEach(link => {
-                if (link.source === startNode.id) {
-                    const targetTask = pertEntry.find(task => task.codeNo === link.target)
-                    if (targetTask && targetTask.slack === 0) {
-                        additionalLinks.push(link);
-                    }
-                }
-            })
-        }
-
-        // Finding the critical path from finish node
-        if (finishNode) {
-            links.forEach(link => {
-                if (link.target === finishNode.id) {
-                    const sourceTask = pertEntry.find(task => task.codeNo === link.source)
-                    if (sourceTask && sourceTask.slack === 0) {
-                        additionalLinks.push(link);
-                    }
-                }
-            })
-        }
-        return additionalLinks;
-    }
-
-    const startFinishSlackLinks = startFinishBoundaries();
-    const allCriticalPaths = [...criticalPathLinks, ...startFinishSlackLinks]
 
 // Panning and zooming
 
@@ -78,9 +79,9 @@ function updateGraph (nodes, links) {
 
     })
 
-    let simulation = d3.forceSimulation(graph.nodes)
-        .force('link', d3.forceLink(graph.links)
-            .id(function (d)    { return d.id; })
+    let simulation = d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(links)
+            .id( d => d.id)
             .distance(d => {
                 if (d.slack !== undefined && d.slack !== 0) {
                     return 120 + (d.slack * 30)
@@ -94,7 +95,18 @@ function updateGraph (nodes, links) {
         .force('y', d3.forceY()) // optional: vertical positioning
         .on('tick', ticked);
 
-    const link = svg
+    // Link elements
+    let link = svg.selectAll('.link')
+        .data(graph.links, d => `${d.source.id}-${d.target.id}`);
+
+    // link.enter()
+    //     .append('line')
+    //     .attr('class', 'link')
+    //     .attr('stroke-width', 2)
+    //     .style('stroke', 'black')
+    //     .merge(link);
+
+    link = svg
         .append('g')
         .selectAll('line')
         .data(graph.links)
@@ -103,126 +115,125 @@ function updateGraph (nodes, links) {
         .attr('stroke-width', 2)
         .style('stroke', d => allCriticalPaths.includes(d) ? "red" : "black")
 
-    const textsAndNodes = svg
+    link.exit().remove();
+
+    // Node Elements
+    let node = svg.selectAll(".node")
+        .data(nodes, d => d.id)
+
+    const nodeEnter = node.enter()
         .append('g')
-        .selectAll('g')
-        .data(graph.nodes)
-        .enter().append("g")
         .attr('class', 'node')
+
+        // call drag simulation function
         .call(drag(simulation))
 
-    let node = textsAndNodes
+    nodeEnter
         .append('rect')
         .attr('class', "nodes")
         .attr('width', () => 100)
         .attr('height', () => 50)
         .attr('rx', 10)
         .attr('ry', 10)
-        .attr('fill', function(d) {
-            return 'white';
-        })
+        .attr('fill', 'white')
         .attr("stroke-width", 2)
         .attr("stroke", () => 'black')
 
-    const lastElement = graph.nodes[graph.nodes.length - 1]
-    const secondToLastElement = graph.nodes[graph.nodes.length - 2]
-
-    let darkBackground = textsAndNodes
+    nodeEnter
         .append('path')
-        .attr("d", d => {
-            if(d.index === lastElement.index || d.index === secondToLastElement.index ) {
-                return "M 10 0H 90C 95.5228 0 100 4.47715 100 10V 40C 100 45.5228 95.5228 50 90 50H 10C 4.47715 50 0 45.5228 0 40V 10C 0 4.47715 4.47715 0 10 0Z "
-            } else {
-                return "M0 10C0 4.47715 4.47715 0 10 0H33.33V25.5H0V10Z"
-            }
-
-        })
+        .attr('class', 'darkBackground')
+        .attr("d", d => d.index === nodes.length - 1 || d.index === nodes.length - 2 ?
+            "M 10 0H 90C 95.5228 0 100 4.47715 100 10V 40C 100 45.5228 95.5228 50 90 50H 10C 4.47715 50 0 45.5228 0 40V 10C 0 4.47715 4.47715 0 10 0Z " :
+            "M0 10C0 4.47715 4.47715 0 10 0H33.33V25.5H0V10Z")
         .attr("fill", "#101423")
 
-    let activity = textsAndNodes
+    nodeEnter
         .append("text")
+        .attr('class', 'activity')
         .text(d => d.name)
-        .attr('x', function(d) {
-            if (d.id === lastElement.id || d.id === secondToLastElement.id) {
-                return 26; // Center x position
-            }
-            return 12; // Default x position
-        })
-        .attr('y', function(d) {
-            if (d.id === lastElement.id || d.id === secondToLastElement.id) {
-                return 28; // Center y position
-            }
-            return 18; // Default y position
-        })
-
+        .attr('x', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 26 : 12)
+        .attr('y', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 28 : 18)
         .style('fill', "white")
         .style('z-index', 100)
 
-    let estimatedTime = textsAndNodes
+    nodeEnter
         .append("text")
+        .attr('class', 'estimatedTime')
         .data(pertEntry)
         .text(d => d.ET)
         .attr('x', 12)
         .attr('y', 43)
 
-    let earlyStart = textsAndNodes
+    nodeEnter
         .append("text")
+        .attr('class', 'earlyStart')
         .data(pertEntry)
         .text(d => d.ES)
         .attr('x', 43)
         .attr('y', 18)
 
-    let earlyFinish = textsAndNodes
+    nodeEnter
         .append("text")
+        .attr('class', 'earlyFinish')
         .data(pertEntry)
         .text(d => d.EF)
         .attr('x', 76)
         .attr('y', 18)
 
-    let latestStart = textsAndNodes
+    nodeEnter
         .append("text")
+        .attr('class', 'latestStart')
         .data(pertEntry)
         .text(d => d.LS)
         .attr('x', 43)
         .attr('y', 43)
 
-    let latestFinish = textsAndNodes
+    nodeEnter
         .append("text")
+        .attr('class', 'latestFinish')
         .data(pertEntry)
         .text(d => d.LF)
         .attr('x', 76)
         .attr('y', 43)
 
 
-    let horizontalPartition = textsAndNodes
+    nodeEnter
         .append('line')
+        .attr('class', 'horizontalPartition')
         .attr("x1", 0)
         .attr("x2", 100)
         .attr("y1", 26)
         .attr("y2", 26)
         .style("stroke", "#101423")
         .style("stroke-width", 2)
-        .style("display", d => (d.id === lastElement.id || d.id === secondToLastElement.id) ? "none" : "inline");
+        .style('display', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 'none' : 'inline');
 
-    let verticalPartition1 = textsAndNodes
+
+    nodeEnter
         .append('line')
+        .attr('class', 'verticalPartition1')
         .attr("x1", 33.33)
         .attr("x2", 33.33)
         .attr("y1", 50)
         .attr("y2", 0)
         .style("stroke", "#101423")
         .style("stroke-width", 2)
-        .style("display", d => (d.id === lastElement.id || d.id === secondToLastElement.id) ? "none" : "inline");
+        .style('display', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 'none' : 'inline');
 
-    let verticalPartition2 = textsAndNodes
+    nodeEnter
         .append('line')
-        .attr("x1", 66.66)
-        .attr("x2", 66.66)
+        .attr('class', 'verticalPartition2')
+        .attr("x1", 33.33)
+        .attr("x2", 33.33)
         .attr("y1", 50)
         .attr("y2", 0)
         .style("stroke", "#101423")
         .style("stroke-width", 2)
-        .style("display", d => (d.id === lastElement.id || d.id === secondToLastElement.id) ? "none" : "inline");
+        .style('display', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 'none' : 'inline');
+
+    node = node.merge(nodeEnter)
+
+    node.exit().remove()
 
     function ticked() {
         link
@@ -230,7 +241,7 @@ function updateGraph (nodes, links) {
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
-        textsAndNodes
+        node
             .attr("transform", d => 'translate(' + (d.x - 50) + ", " + (d.y - 20) + ")")
 
     }
@@ -261,4 +272,4 @@ function updateGraph (nodes, links) {
     simulation.restart()
 }
 
-updateGraph(nodes, links)
+displayGraph(window.nodes, window.links)

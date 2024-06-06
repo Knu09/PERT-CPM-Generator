@@ -46,16 +46,21 @@ body {
 }
 
 h1 {
+    margin-top: 30px;
     font-weight: 600;
-    font-size: clamp(26px, 4vw, 32px);
+    font-size: clamp(32px, 6vw, 36px);
     color: rgb(221, 221, 221);
 }
 
 .details p {
     font-family: Helvetica, sans-serif;
     color: rgba(221, 221, 221, 0.8);
-    font-size: clamp(8px, 10vw, 16px);
+    font-size: clamp(12px, 2vw, 17px);
     margin: 15px 0;
+}
+
+.pert-table {
+    margin: 5em auto 50px;
 }
 
 .content-table {
@@ -196,7 +201,8 @@ input {
 /* Button Style */
 
 .modification {
-
+    display: flex;
+    justify-content: space-between;
 }
 
 .button {
@@ -211,7 +217,7 @@ input {
     cursor: pointer;
 }
 
-.button span {
+.icon {
     padding-right: 8px;
 }
 
@@ -220,3 +226,18 @@ input {
 }
 
 /* Button Style */
+
+ul {
+    padding-left: 40px;
+    margin: 0;
+}
+
+ul li::marker {
+    color: #DDDDDDCC;
+}
+
+.strong-text {
+    font-weight: 600;
+    color: var(--clr-primary-blue);
+    padding: 0 5px;
+}

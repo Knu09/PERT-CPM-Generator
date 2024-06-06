@@ -1,4 +1,4 @@
-let pertEntry = [
+const pertEntry = [
     {
         codeNo: 1,
         code: "A",
@@ -75,6 +75,15 @@ let pertEntry = [
         codeNo: 9,
         code: "I",
         predecessor: ["F"],
+        description: "Sample Activity",
+        a: 2,
+        m: 2,
+        b: 7,
+    },
+    {
+        codeNo: 10,
+        code: "L",
+        predecessor: ["G"],
         description: "Sample Activity",
         a: 2,
         m: 2,

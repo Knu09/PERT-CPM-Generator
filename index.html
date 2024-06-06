@@ -15,14 +15,43 @@
             <h1>PERT and CPM Generator</h1>
             <p>Project Evaluation and Review Technique (PERT) and Critical Path Method (CPM) are both useful tools when planning and controlling a project. PERT and CPM are complementary and both are important analytical techniques in project management when managing tasks.</p>
             <p> This website provides an efficient tool for evaluating and calculation for project management, this tool help to determine and visualize how much time it will take to complete a specific project.</p>
+            <h1>How to use?</h1>
+            <div class="how-to-use-container">
+                <p>Here is a step-by-step guide to using the program.</p>
+                <p>To add a new activity to your project: </p>
+                <p>1. Click the <span class="strong-text"><span class="button-icon icon"><i class="fa-solid fa-circle-plus"></i></span>Add activity</span> to add a new activity to the project.</p>
+                <p>2. Enter task details: </p>
+                <ul>
+                    <li><p><strong>Task Code:</strong> A unique identifier for the task (e.g., A, B, C).</p></li>
+                    <li><p><strong>Description:</strong>  A brief description of the task.</p></li>
+                    <li><p><strong>Predecessor:</strong> The task codes of any preceding tasks that must be completed before this task begins. If there are multiple predecessors, separate them with commas (e.g., A, B).</p></li>
+                    <li><p><strong>Time Estimates:</strong></p></li>
+                    <ul>
+                        <li><p><strong>Optimistic Time (a): </strong>The shortest time in which the task can be completed.</p></li>
+                        <li><p><strong>Most Probable Time (m): </strong></p></li>
+                        <li><p><strong>Pessimistic Time (b): </strong>The longest time the task might take to complete.</p></li>
+                    </ul>
+                    <li><p>These inputs are used to calculate the Estimated Time (ET) for the task using the formula: <br/>ET = (a + 4m + b) / 6.</p></li>
+                </ul>
+                <p>3. Click the <span class="strong-text"><span class="button-icon icon"><i class="fa-solid fa-rotate"></i></span>Force data reload</span> to recalculate all the values and redraw the graph based on the current data.</p>
+                <p>4. Click the <span class="strong-text"><span class="button-icon icon"><i class="fa-solid fa-trash-can"></i></span>Remove all</span> to remove all tasks from the project.</p>
+            </div>
+
+
         </div>
-        <div class="modification">
-            <button class="button add-button"><span class="button-icon icon"><i class="fa-solid fa-circle-plus"></i></span>Add activity</button>
-            <button class="button update-button"><span class="button-icon icon"><i class="fa-solid fa-rotate"></i></span>Force data reload</button>
-            <button class="button remove-button"><span class="button-icon icon"><i class="fa-solid fa-trash-can"></i></span>Remove all</button>
-        </div>
-        <table class="content-table">
-            <thead>
+        <div class="pert-table">
+            <div class="modification">
+                <div>
+                    <button class="button add-button"><span class="button-icon icon"><i class="fa-solid fa-circle-plus"></i></span>Add activity</button>
+                </div>
+                <div>
+                    <button class="button update-button"><span class="button-icon icon"><i class="fa-solid fa-rotate"></i></span>Force data reload</button>
+                    <button class="button remove-button"><span class="button-icon icon"><i class="fa-solid fa-trash-can"></i></span>Remove all</button>
+                </div>
+
+            </div>
+            <table class="content-table">
+                <thead>
                 <tr>
                     <td>No.</td>
                     <td>Task</td>
@@ -38,11 +67,12 @@
                     <td>LF</td>
                     <td>Slack</td>
                 </tr>
-            </thead>
-            <tbody class="PERT-body">
+                </thead>
+                <tbody class="PERT-body">
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
 
         <div class="svg-container">
             <svg id="svgContent" width="1500" height="1000" >
@@ -67,11 +97,16 @@
 
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
-
     <script src="scripts/pert_data.js"></script>
     <script src="scripts/script.js"></script>
     <script src="scripts/d3_data.js"></script>
     <script src="scripts/d3.js"></script>
+
+
+
+
+
+
 </body>
 <footer class="copyright">
     <a class="author" target="_blank" href="https://knu09.github.io/v2.christiandelatorre/">
