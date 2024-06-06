@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="styles/index.css">
     <link rel="stylesheet" href="styles/network.css">
+    <link rel="stylesheet" href="styles/gantt-chart.css">
     <title>PERT and CPM Generator</title>
 
     <!--FONT AWESOME-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
 </head>
 <body>
     <div class="container">
@@ -19,7 +21,7 @@
             <div class="how-to-use-container">
                 <p>Here is a step-by-step guide to using the program.</p>
                 <p>To add a new activity to your project: </p>
-                <p>1. Click the <span class="strong-text"><span class="button-icon icon"><i class="fa-solid fa-circle-plus"></i></span>Add activity</span> to add a new activity to the project.</p>
+                <p>1. Click the <span class="strong-text"><span class="button-icon icon"><i class="fa-solid fa-circle-plus"></i></span>Add activity</span> to add a new activity and node to the project.</p>
                 <p>2. Enter task details: </p>
                 <ul>
                     <li><p><strong>Task Code:</strong> A unique identifier for the task (e.g., A, B, C).</p></li>
@@ -93,19 +95,27 @@
                 </svg>
             </div>
         </div>
+        <div class="chartCard">
+            <div class="chartBox">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
     </div>
 
 
+    <!--  Gantt Chart Script  -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <!--  D3.js Script  -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+
     <script src="scripts/pert_data.js"></script>
     <script src="scripts/script.js"></script>
     <script src="scripts/d3_data.js"></script>
     <script src="scripts/d3.js"></script>
 
-
-
-
-
+    <script src="scripts/ganttChart.js"></script>
 
 </body>
 <footer class="copyright">

@@ -85,7 +85,7 @@ function displayGraph (nodes, links) {
             .id( d => d.id)
             .distance(d => {
                 if (d.slack !== undefined && d.slack !== 0) {
-                    return 120 + (d.slack * 30)
+                    return 120 + (d.slack * 5)
                 }
                 return 120
             })
@@ -97,19 +97,32 @@ function displayGraph (nodes, links) {
         .on('tick', ticked);
 
     // Link elements
-    let link = svg.selectAll('.link')
+    let linkGroup = svg.selectAll('.link')
         .data(links, d => `${d.source.id}-${d.target.id}`);
 
-    link = svg
+    let newLinkGroup = linkGroup.enter()
         .append('g')
-        .selectAll('line')
-        .data(links)
-        .enter()
+        .attr('class', 'line')
+
+    newLinkGroup
         .append('line')
+        .data(links)
         .attr('stroke-width', 2)
         .style('stroke', d => allCriticalPaths.includes(d) ? "red" : "black")
+    newLinkGroup
+        .append('text')
+        .attr('class', 'link-label')
+        .attr('text-anchor', 'middle')
+        .data(links)
+        .text(d => d.slack)
+        .style('font-size', '16px')
+        .attr('dy', -10)
 
-    link.exit().remove();
+
+    // Merge and update existing link groups
+    linkGroup = newLinkGroup.merge(linkGroup);
+
+    linkGroup.exit().remove();
 
     // Node Elements
     let node = svg.selectAll(".node")
@@ -217,8 +230,8 @@ function displayGraph (nodes, links) {
     nodeEnter
         .append('line')
         .attr('class', 'verticalPartition2')
-        .attr("x1", 33.33)
-        .attr("x2", 33.33)
+        .attr("x1", 66.66)
+        .attr("x2", 66.66)
         .attr("y1", 50)
         .attr("y2", 0)
         .style("stroke", "#101423")
@@ -229,18 +242,24 @@ function displayGraph (nodes, links) {
 
     node.exit().remove()
 
-    console.log(graph.links)
-    console.log(links)
     function ticked() {
+        // Update link positions
+        linkGroup.select('line')
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
 
-
-
-        link
-            .data(links)
-            .attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
+        // Update label positions
+        linkGroup.select('text')
+            .attr('x', d => (d.source.x + d.target.x) / 2)
+            .attr('y', d => (d.source.y + d.target.y) / 2);
+        // linkGroup
+        //     .data(links)
+        //     .attr("x1", function(d) { return d.source.x; })
+        //     .attr("y1", function(d) { return d.source.y; })
+        //     .attr("x2", function(d) { return d.target.x; })
+        //     .attr("y2", function(d) { return d.target.y; });
         node
             .attr("transform", d => 'translate(' + (d.x - 50) + ", " + (d.y - 20) + ")")
 

@@ -1,0 +1,22 @@
+.chartMenu p {
+    padding: 10px;
+    font-size: 20px;
+}
+.chartCard {
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chartBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: 5em auto;
+    padding: 20px;
+    border-radius: 10px;
+    background: var(--clr-primary-dark-blue);
+}

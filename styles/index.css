@@ -42,7 +42,7 @@ body {
 }
 
 .details {
-    max-width: 800px;
+    /*max-width: 800px;*/
     width: 100%;
 }
 
@@ -58,7 +58,7 @@ h1 {
     color: rgba(221, 221, 221, 0.8);
     font-size: clamp(14px, 4vw, 20px);
     margin: 15px 0;
-    line-height: clamp(12px, 4vw, 24px);
+    line-height: clamp(12px, 4vw, 28px);
 }
 
 .pert-table {

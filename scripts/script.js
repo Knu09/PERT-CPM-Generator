@@ -108,12 +108,13 @@ function removeAllData () {
 }
 
 function addActivity(task) {
-    const newCode = String.fromCharCode(65 + task.length - 1)
+    // const newCode = String.fromCharCode(65 + task.length - 1)
+    const previousTask = task.length - 1
     pertEntry.push({
         codeNo: task.length + 1,
-        code: newCode,
+        code: "",
         description: '',
-        predecessor: [],
+        predecessor: [task[previousTask].code],
         a: 4,
         m: 3,
         b: 2,
@@ -130,7 +131,7 @@ function addActivity(task) {
       <td>${task.length}</td>
       <td><input data-index="${task.length - 1}" class="input task-input" type="text" placeholder="--"></td>
       <td><input data-index="${task.length - 1}" class="input description-input" type="text" placeholder="Empty"></td>
-      <td><input data-index="${task.length - 1}" class="input predecessor-input" type="text" placeholder="--"></td>
+      <td><input data-index="${task.length - 1}" class="input predecessor-input" type="text" placeholder="--" value="${task[previousTask].code}"></td>
       <td><input data-index="${task.length - 1}" placeholder="0" class="input time-variability time-variability-a" /> </td>
       <td><input data-index="${task.length - 1}" placeholder="0" class="input time-variability time-variability-m" /> </td>
       <td><input data-index="${task.length - 1}" placeholder="0" class="input time-variability time-variability-b" /> </td>
@@ -152,7 +153,6 @@ function addActivity(task) {
     updateNodesAndLinks()
 
     displayGraph(window.nodes, window.links)
-    console.log(nodes, links)
 
 }
 
@@ -243,6 +243,7 @@ function inputEvents() {
                 const splitPred = (event.target.value).split(',').map(code => code.trim());
                 const invalidPred = splitPred.filter(pred => !pertEntry.slice(0, taskIndex).some(task => task.code === pred))
                 if (invalidPred.length > 0) {
+                    pertEntry[taskIndex].predecessor = pertEntry[taskIndex].predecessor
                     alert(`Invalid predecessor codes: ${splitPred.join(', ')}`);
                 } else {
                     splitPred.forEach(pred => {
@@ -254,6 +255,7 @@ function inputEvents() {
             updateDisplayedValues()
             updateNodesAndLinks()
             displayGraph(nodes, links)
+            updateGanttChart()
         })
     })
 }
@@ -286,7 +288,6 @@ function updateNodesAndLinks () {
                 })
             })
         })
-        console.log(links)
 
         // Linking Start node to a none predecessor nodes
         pertEntry.forEach(task => {
@@ -322,16 +323,21 @@ function updateNodesAndLinks () {
     }
 }
 
+
 // button selectors
 const addActivityBtn = document.querySelector(".add-button")
 const forceReloadData = document.querySelector(".update-button")
 const removeAllDataBtn = document.querySelector('.remove-button')
 addActivityBtn.addEventListener('click', () => {
     addActivity(pertEntry)
+    updateGanttChart()
 })
-forceReloadData.addEventListener('click', forceDataReload)
+forceReloadData.addEventListener('click', () => {
+    forceDataReload()
+})
 removeAllDataBtn.addEventListener('click', () => {
     removeAllData(pertEntry)
+    updateGanttChart()
 })
 
 calculatePertValues(pertEntry)
