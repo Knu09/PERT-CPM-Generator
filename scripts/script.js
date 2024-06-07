@@ -222,6 +222,7 @@ function inputEvents() {
                     if (hasMatchingTask) {
                         alert(`The task code ${taskArr} is already in use.`);
                     } else {
+
                         if (hasMatchingPred) {
                             pertEntry.forEach(task => {
                                 const predIndex = task.predecessor.indexOf(previousValue);
@@ -230,9 +231,11 @@ function inputEvents() {
                                 }
                             });
                             alert(`The predecessor of task code ${previousValue} has been replaced with the new predecessor ${taskArr}.`);
+                            pertEntry[taskIndex].code = taskArr
                         } else {
                             pertEntry[taskIndex].code = taskArr
                         }
+
                     }
                 }
 

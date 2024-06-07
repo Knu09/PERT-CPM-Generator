@@ -11,14 +11,12 @@
 }
 
 .details {
-    margin-left: 20px;
-    margin-bottom: 20px;
-    margin-top: 20px;
+    padding: 20px;
 }
 
 .pert-network-details {
-    margin-top: 35px;
-    margin-left: 35px;
+    margin-top: 25px;
+    margin-left: 15px;
 }
 
 .details h2 {

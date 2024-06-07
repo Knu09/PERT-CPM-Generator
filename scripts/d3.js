@@ -148,6 +148,7 @@ function displayGraph (nodes, links) {
         .data(links)
         .attr("stroke", "#37B6D4")
 
+    console.log(nodes)
     nodeEnter
         .append('path')
         .attr('class', 'darkBackground')
@@ -160,10 +161,18 @@ function displayGraph (nodes, links) {
     nodeEnter
         .append("text")
         .attr('class', 'activity')
+        .data(nodes)
+        .style('fill', d => {
+            if(d === startNode || d === finishNode) {
+                return "white"
+            } else {
+                console.log(startNode)
+                return "#000"
+            }
+        })
         .text(d => d.name)
         .attr('x', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 26 : 12)
         .attr('y', d => d.id === nodes[nodes.length - 1].id || d.id === nodes[nodes.length - 2].id ? 28 : 18)
-        .style('fill', "#000")
         .style('z-index', 100)
 
     nodeEnter
