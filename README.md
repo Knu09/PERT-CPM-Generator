@@ -8,20 +8,27 @@ Here is a step-by-step guide to using the program.
 
 To add a new activity to your project:
 
-1. Click the Add activity to add a new activity and node to the project.
+1. Click the **Add activity** to add a new activity and node to the project.
 2. Enter task details:
+
+
+   **Task Code**: A unique identifier for the task (e.g., A, B, C).
    
-  Task Code: A unique identifier for the task (e.g., A, B, C).
-  Description: A brief description of the task.
-  Predecessor: The task codes of any preceding tasks that must be completed before this task begins. If there are multiple predecessors, separate them with commas (e.g., A, B).
-  Time Estimates:
-    Optimistic Time (a): The shortest time in which the task can be completed.
-    Most Probable Time (m):
-    Pessimistic Time (b): The longest time the task might take to complete.
+   **Description**: A brief description of the task.
+   
+   **Predecessor**: The task codes of any preceding tasks that must be completed before this task begins. If there are multiple predecessors, separate them with commas (e.g., A, B).
+  
+     **Time Estimates**:
+  
+   1. **Optimistic Time (a)**: The shortest time in which the task can be completed.
+
+   2. **Most Probable Time (m)**: The most probable time required to complete the task.
+
+   3. **Pessimistic Time (b)**: The longest time the task might take to complete.
+
 
     These inputs are used to calculate the Estimated Time (ET) for the task using the formula:
     ET = (a + 4m + b) / 6.
 
-4. Click the Force data reload to recalculate all the values and redraw the graph based on the current data.
-
-5. Click the Remove all to remove all tasks from the project.
+4. Click the **Force data reload** to recalculate all the values and redraw the graph based on the current data.
+5. Click the **Remove all** to remove all tasks from the project.
