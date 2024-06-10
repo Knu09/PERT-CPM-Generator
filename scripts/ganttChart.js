@@ -17,31 +17,47 @@ function formatDate(dayOffset) {
     return `${year}-${month}-${day}`;
 }
 
+function criticalPathColor () {
+    return pertEntry.map(task => task.slack > 0 ? "#D43737" : "#37b5d4")
+}
+
 // Function to update and re-render the Gantt chart
 function updateGanttChart() {
     const currentDate = getCurrentDate();
 
     const data = {
         labels: [],
-        datasets: [{
-            label: 'PERT/CPM Gantt Chart',
-            data: [],
-            backgroundColor: '#37b6d4',
-            borderColor: 'transparent',
-            barPercentage: 0.5
-        }]
+        barPercentage: .5,
+        datasets: [
+            {
+                label: 'Critical Path',
+                data: pertEntry.filter(task => task.slack === 0).map(task => ({
+                    x: [formatDate(task.ES), formatDate(task.LF)],
+                    y: task.code
+                })),
+                backgroundColor: "#37b5d4",
+                borderColor: 'transparent',
+
+            },
+            {
+                label: 'Non-Critical Path',
+                data: pertEntry.filter(task => task.slack > 0).map(task => ({
+                    x: [formatDate(task.ES), formatDate(task.LF + task.slack)],
+                    y: task.code
+                })),
+                backgroundColor: "#D43737",
+                borderColor: 'transparent',
+            }
+        ]
     };
 
     // Push PERT data and activity
     pertEntry.forEach(task => {
-        // Push task code to labels
         data.labels.push(task.code);
-
-        // Format the dates and push to data array
         const esFormatted = formatDate(task.ES);
         const lfFormatted = formatDate(task.LF);
-        data.datasets[0].data.push([esFormatted, lfFormatted]);
     });
+
 
     // Config for the chart
     const config = {
@@ -109,11 +125,17 @@ function updateGanttChart() {
                 },
                 tooltip: {
                     callbacks: {
-                        label: function (tooltipItem, data) {
-                            let label = myChart.data.labels[tooltipItem.dataIndex];
-                            let value = myChart.data.datasets[tooltipItem.datasetIndex].data[tooltipItem.dataIndex]
-
-                            return label + ": " + value;
+                        label: function (tooltipItem) {
+                            const task = pertEntry.find(t => t.code === tooltipItem.label);
+                            const esDate = formatDate(task.ES);
+                            const lfDate = formatDate(task.LF + task.slack);
+                            const slack = task.slack
+                            const duration = (task.ES + task.LF);
+                            return [
+                                `Date: ${esDate} to ${lfDate}`,
+                                `Delay day(s): ${slack}`,
+                                `Duration: ${duration} + ${slack} day(s)`
+                            ];
                         }
                     },
                     bodyFont: {
