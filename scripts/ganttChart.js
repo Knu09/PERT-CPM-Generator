@@ -125,21 +125,30 @@ function updateGanttChart() {
                 },
                 tooltip: {
                     callbacks: {
+                        title: function(tooltipItem) {
+                            const task = pertEntry.find(t => t.code === tooltipItem[0].label);
+                            return `${task.description}`
+                        },
                         label: function (tooltipItem) {
                             const task = pertEntry.find(t => t.code === tooltipItem.label);
+                            const activity = task.code
                             const esDate = formatDate(task.ES);
                             const lfDate = formatDate(task.LF + task.slack);
                             const slack = task.slack
                             const duration = (task.ES + task.LF);
                             return [
+                                `Task: ${activity}`,
                                 `Date: ${esDate} to ${lfDate}`,
                                 `Delay day(s): ${slack}`,
                                 `Duration: ${duration} + ${slack} day(s)`
                             ];
                         }
                     },
-                    bodyFont: {
+                    titleFont: {
                         size: 18
+                    },
+                    bodyFont: {
+                        size: 16
                     }
                 }
             }
